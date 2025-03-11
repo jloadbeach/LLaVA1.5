@@ -779,9 +779,18 @@ def make_supervised_data_module(tokenizer: transformers.PreTrainedTokenizer,
     train_dataset = LazySupervisedDataset(tokenizer=tokenizer,
                                 data_path=data_args.data_path,
                                 data_args=data_args)
+
+        # Modify the data path to append "-short" before the last period
+    eval_args = data_args.data_path.rsplit(".", 1)
+    eval_args = f"{eval_args[0]}-eval.{eval_args[1]}"
+
+    eval_dataset = LazySupervisedDataset(tokenizer=tokenizer,
+                                data_path=eval_args,
+                                data_args=data_args)
+
     data_collator = DataCollatorForSupervisedDataset(tokenizer=tokenizer)
     return dict(train_dataset=train_dataset,
-                eval_dataset=None,
+                eval_dataset=eval_dataset,
                 data_collator=data_collator)
 
 
